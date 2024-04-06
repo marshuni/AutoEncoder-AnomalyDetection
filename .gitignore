@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 
 data/
-checkpoint/
 temp.py
+data.zip

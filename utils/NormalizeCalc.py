@@ -1,4 +1,5 @@
 # src:https://blog.csdn.net/dcrmg/article/details/102467434
+# 用于计算图像数据的标准差与均值
 
 import numpy as np
 import cv2

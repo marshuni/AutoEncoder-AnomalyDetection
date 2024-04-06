@@ -45,7 +45,7 @@ def Test_DataLoader_Mnist(numbers:list):
     loader = DataLoader(filter, batch_size=len(dataset), shuffle=True)
     return loader
 
-# 异常检测-capsule数据集
+# 工业图像异常检测-capsule数据集
 class Capsule(Dataset):
     def __init__(self,data_dir, transform=None):
         self.label_name = capsule_label
