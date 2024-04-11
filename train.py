@@ -12,12 +12,15 @@ from config import *
 from data_loader import *
 from model import *
 
-AE = Autoencoder(z_dim)
+StudentAE = Autoencoder_Student(z_dim)
+TeacherAE = Autoencoder_Teacher(z_dim)
+
 mse_loss = nn.MSELoss()
 optimizer = torch.optim.Adam(AE.parameters(),
                              lr=learning_rate,
                              weight_decay=1e-5)
 
+cuda = torch.cuda.is_available()
 if cuda:
     AE.cuda()
 

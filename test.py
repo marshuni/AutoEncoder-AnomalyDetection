@@ -12,16 +12,16 @@ from config import *
 from data_loader import *
 from model import *
 
-AE = Autoencoder(z_dim)
+AE = Autoencoder_Teacher(z_dim)
 mse_loss = nn.MSELoss()
 optimizer = torch.optim.Adam(AE.parameters(),
-                             lr=learning_rate,
+                             lr=learning_rate_teacher,
                              weight_decay=1e-5)
 
 if cuda:
     AE.cuda()
 
-checkpoint = torch.load(CKPT_PATH)
+checkpoint = torch.load(CKPT_PATH_TEACHER)
 AE.load_state_dict(checkpoint['model_state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
@@ -31,11 +31,11 @@ input = []
 output = []
 
 for img,label in test_loader:
-    x = img.view(img.size(0), -1)
+
     if cuda:
-        x = Variable(x).cuda()
+        x = img.cuda().view(img.size(0), -1)
     else:
-        x = Variable(x)
+        x = img.view(img.size(0), -1)
 
     xhat = AE(x)
     x = x.cpu().detach().numpy()
