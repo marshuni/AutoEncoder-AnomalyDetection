@@ -6,7 +6,7 @@ learning_rate = 4.0e-4
 
 cuda = True
 
-CKPT_PATH = "./checkpoint/model_capsule.pt"
+CKPT_PATH = "./checkpoint/model.pt"           # 修改
 
 capsule_label = {
     'good':0,

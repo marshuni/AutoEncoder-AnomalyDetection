@@ -13,7 +13,7 @@ normStd = [0.23617877, 0.25674772, 0.25802118]
 # 从Mlist中调取特定数据
 class Mnisttox(Dataset):
     def __init__(self, datasets ,labels:list):
-        self.dataset = [datasets[i][0] for i in range(len(datasets))
+        self.dataset = [datasets[i] for i in range(len(datasets))
                         if datasets[i][1] in labels ]
         self.labels = labels
         self.len_oneclass = int(len(self.dataset)/10)
@@ -22,8 +22,8 @@ class Mnisttox(Dataset):
         return int(len(self.dataset))
 
     def __getitem__(self, index):
-        img = self.dataset[index]
-        return img,[]
+        img,label = self.dataset[index]
+        return img,label
 
 def Train_DataLoader_Mnist(numbers:list):
     img_transform = transforms.Compose([
@@ -40,7 +40,7 @@ def Test_DataLoader_Mnist(numbers:list):
         transforms.ToTensor(),
         transforms.Normalize((0.5, ), (0.5, ))  # [0,1] => [-1,1]
     ])
-    dataset = MNIST('./data', download=True,train=False, transform=img_transform)
+    dataset = MNIST('./data/MNIST', download=True,train=False, transform=img_transform)
     filter = Mnisttox(dataset,numbers)
     loader = DataLoader(filter, batch_size=len(dataset), shuffle=True)
     return loader

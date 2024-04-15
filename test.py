@@ -18,64 +18,56 @@ optimizer = torch.optim.Adam(AE.parameters(),
                              lr=learning_rate,
                              weight_decay=1e-5)
 
-if cuda:
-    AE.cuda()
 
-checkpoint = torch.load(CKPT_PATH)
+
+
+checkpoint = torch.load(CKPT_PATH, map_location=torch.device('cpu'))
 AE.load_state_dict(checkpoint['model_state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
-test_loader = Test_DataLoader_Capsule()
+test_loader = Test_DataLoader_Mnist(numbers=list(range(10)))  #修改
 
 input = []
 output = []
 
-for img,label in test_loader:
+for img, label in test_loader:
     x = img.view(img.size(0), -1)
-    if cuda:
-        x = Variable(x).cuda()
-    else:
-        x = Variable(x)
+    x = Variable(x)
 
     xhat = AE(x)
-    x = x.cpu().detach().numpy()
-    xhat = xhat.cpu().detach().numpy()
-    x = x/2 + 0.5
-    xhat = xhat/2 + 0.5
+    x = x.detach().numpy()
+    xhat = xhat.detach().numpy()
+    x = x / 2 + 0.5
+    xhat = xhat / 2 + 0.5
 
     label = label.numpy()
-    for i in range(0,x.shape[0]):
-        input.append({'img':x[i],'label':label[i]})
-        output.append({'img':xhat[i],'label':label[i]})
-        
+    for i in range(0, x.shape[0]):
+        input.append({'img': x[i], 'label': label[i]})
+        output.append({'img': xhat[i], 'label': label[i]})
+
 
 def unload(x):
     unloader = transforms.ToPILImage()
 
-    # imag = x.reshape(3, 64, 64)
-    # imag = np.transpose(imag,[1,2,0])
-    imag = x.reshape(64, 64)
+    imag = x.reshape(28, 28)
 
     pil_image = unloader(imag)
-    # plt.imshow(pil_image)
     return pil_image
 
 
 # 数据可视化
-n = 6 #number of test sample
+n = 6  # number of test sample
 plt.figure(figsize=(12, 6))
 for i in range(n):
     # 输入图像显示
     ax = plt.subplot(3, n, i + 1)
-    plt.imshow(unload(input[i]['img']),cmap='gray')
-    # plt.gray()
+    plt.imshow(unload(input[i]['img']), cmap='gray')
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 
     # 输出图像显示
     ax = plt.subplot(3, n, i + 1 + n)
-    plt.imshow(unload(output[i]['img']),cmap='gray')
-    # plt.gray()
+    plt.imshow(unload(output[i]['img']), cmap='gray')
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 
@@ -88,10 +80,9 @@ for i in range(n):
     # 差异图像与分数显示
     ax = plt.subplot(3, n, i + 1 + n * 2)
     plt.imshow(unload(diff_img))
-    #plt.gray()
     ax.get_xaxis().set_visible(True)
     ax.get_yaxis().set_visible(True)
-    ax.set_xlabel('label = %d\nscore = %.2f' % (input[i]['label'],diff))
+    ax.set_xlabel('label = %d\nscore = %.2f' % (input[i]['label'], diff))
 
 plt.savefig("./save/result_capsule_%s.png" % datetime.datetime.now().time().strftime(r"%H_%M_%S"))
 plt.show()
